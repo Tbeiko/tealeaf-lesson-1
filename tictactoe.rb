@@ -55,9 +55,9 @@ def assert_if_win(player_mark)
   end
 end
 
-def assert_if_empty_spaces(arr)
-  if     arr.include?(" ")
-    # Still empty spaces, all good
+def assert_if_tie
+  if     SPOTS.include?(" ")
+    # Still empty spaces, the game continues
   elsif @game_still_on
     @game_still_on = false
     puts
@@ -84,7 +84,7 @@ begin
   end
   SPOTS[user_pick-1] = USER_MARK
   assert_if_win(USER_MARK)
-  assert_if_empty_spaces(SPOTS)
+  assert_if_tie
 
   if @game_still_on
     puts
@@ -97,7 +97,7 @@ begin
     end while SPOTS[cpu_pick] != " "
     SPOTS[cpu_pick]    = CPU_MARK
     assert_if_win(CPU_MARK)
-    assert_if_empty_spaces(SPOTS)
+    assert_if_tie
   end 
 
 end while @game_still_on
