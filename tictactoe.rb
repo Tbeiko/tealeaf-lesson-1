@@ -2,6 +2,8 @@
 # The player decides where he wants to put his mark
 # Once he does, the computer puts their mark somewhere
 # The first person to have three in a row, wins
+# There can be a tie 
+
 SPOTS = [" ", " ", " ",
          " ", " ", " ",
          " ", " ", " "]
@@ -40,16 +42,27 @@ def assert_if_win(player_mark)
                           (SPOTS[2] == player_mark && SPOTS[4] == player_mark && SPOTS[6] == player_mark))
   if    winning_combination && (player_mark == USER_MARK)
     puts
-    puts "TIC TAC TOE !"
+    puts "TIC TAC TOE"
     puts
     puts "Congragulation you won!"
     @game_still_on = false
   elsif winning_combination && (player_mark == CPU_MARK)
     puts
-    puts "TIC TAC TOE !"
+    puts "TIC TAC TOE"
     puts
     puts "Oh well, the computer beat you this time !"
     @game_still_on = false
+  end
+end
+
+def assert_if_empty_spaces(arr)
+  if     arr.include?(" ")
+    # Still empty spaces, all good
+  elsif @game_still_on
+    @game_still_on = false
+    puts
+    puts "It's a tie!"
+    puts
   end
 end
 
@@ -71,6 +84,7 @@ begin
   end
   SPOTS[user_pick-1] = USER_MARK
   assert_if_win(USER_MARK)
+  assert_if_empty_spaces(SPOTS)
 
   if @game_still_on
     puts
@@ -83,7 +97,8 @@ begin
     end while SPOTS[cpu_pick] != " "
     SPOTS[cpu_pick]    = CPU_MARK
     assert_if_win(CPU_MARK)
-  end
+    assert_if_empty_spaces(SPOTS)
+  end 
 
 end while @game_still_on
 
