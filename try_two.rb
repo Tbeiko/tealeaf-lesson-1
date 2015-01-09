@@ -33,6 +33,7 @@ def attack
   @needs_to_play = false
 end
 
+# This is what I'd implement in my program to make the computer play. 
 def computer_plays
   @needs_to_play = true
 
@@ -56,7 +57,7 @@ end
 
 
 
-
+# This is only here for reference. 
 def assert_if_win(player_mark)
   winning_combination =  ((SPOTS[0] == player_mark && SPOTS[1] == player_mark && SPOTS[2] == player_mark) ||
                           (SPOTS[3] == player_mark && SPOTS[4] == player_mark && SPOTS[5] == player_mark) ||
