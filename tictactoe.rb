@@ -10,6 +10,11 @@ SPOTS = [" ", " ", " ",
 USER_MARK = "X"
 CPU_MARK  = "O"
 
+# For figuring out if two in a row. 
+WINNNG_LINES = [[SPOTS[0], SPOTS[1],SPOTS[2]], [SPOTS[3], SPOTS[4],SPOTS[5]], [SPOTS[6], SPOTS[7],SPOTS[8]],
+                [SPOTS[0], SPOTS[3],SPOTS[6]], [SPOTS[1], SPOTS[4],SPOTS[7]], [SPOTS[2], SPOTS[5],SPOTS[8]], 
+                [SPOTS[0], SPOTS[4],SPOTS[8]], [SPOTS[2], SPOTS[4],SPOTS[6]] ]
+
 @game_still_on = true 
 
 def display_ttc_grid 
@@ -66,6 +71,16 @@ def assert_if_tie
   end
 end
 
+# Working on this method more in try_two.rb 
+# def assert_two_in_a_row(arr, player_mark)
+#   if arr.each.count(player_mark) == 2
+#     puts "We're onto something!"
+#     # arr.select{|k,v| v == ' '}.keys.first
+#   else
+#     false
+#   end
+# end
+
 puts 
 puts "Welcome to TicTacToe!"
 puts 
@@ -99,7 +114,6 @@ begin
     assert_if_win(CPU_MARK)
     assert_if_tie
   end 
-
 end while @game_still_on
 
 puts
