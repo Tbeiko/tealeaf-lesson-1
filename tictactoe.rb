@@ -4,9 +4,9 @@
 # The first person to have three in a row, wins
 # There can be a tie 
 
-@spots = [" ", " ", " ",
-          " ", " ", " ",
-          " ", " ", " "]
+# @spots = [" ", " ", " ",
+#           " ", " ", " ",
+#           " ", " ", " "]
 
 USER_MARK = "X"
 CPU_MARK  = "O"
@@ -34,16 +34,21 @@ def display_ttc_grid
   puts empty_line
 end
 
+
 def assert_if_win(lines, spots)
   if lines.find {|l| l.all? {|k| spots[k-1] == USER_MARK}}
     puts
     puts "TIC TAC TOE"
+    puts
+    display_ttc_grid
     puts
     puts "Congragulations you won!"
     @game_still_on = false
   elsif lines.find {|l| l.all? {|k| spots[k-1] == CPU_MARK}}
     puts
     puts "TIC TAC TOE"
+    puts
+    display_ttc_grid
     puts
     puts "Oh well, the computer beat you this time !"
     @game_still_on = false
@@ -115,29 +120,48 @@ puts "Welcome to TicTacToe!"
 puts 
 
 begin 
-  display_ttc_grid
-  puts
-  puts "Please select where to place your 'X'. (1-9, 1-3 is the first row, 4-6 the second and 7-9 the third.)"
 
-  user_pick = gets.chomp.to_i
-  if @spots[user_pick-1] != " "
-    begin
-      puts "That spot is already taken! Please choose another one."
-      user_pick = gets.chomp.to_i
-    end while @spots[user_pick-1] != " "
-  end
-  @spots[user_pick-1] = USER_MARK
-  assert_if_win(WINNING_LINES, @spots)
-  assert_if_tie
+  want_to_play = true 
+  @spots = [" ", " ", " ",
+            " ", " ", " ",
+            " ", " ", " "]
 
-  if @game_still_on
-    computer_moves(WINNING_LINES, @spots)
+  begin 
+
+    display_ttc_grid
+    puts
+    puts "Please select where to place your 'X'. (1-9, 1-3 is the first row, 4-6 the second and 7-9 the third.)"
+    user_pick = gets.chomp.to_i
+
+    if @spots[user_pick-1] != " "
+      begin
+        puts "That spot is already taken! Please choose another one."
+        user_pick = gets.chomp.to_i
+      end while @spots[user_pick-1] != " "
+    end
+    @spots[user_pick-1] = USER_MARK
     assert_if_win(WINNING_LINES, @spots)
     assert_if_tie
-  end 
-end while @game_still_on
 
-puts
-display_ttc_grid
+    if @game_still_on
+      computer_moves(WINNING_LINES, @spots)
+      assert_if_win(WINNING_LINES, @spots)
+      assert_if_tie
+    end 
+  end while @game_still_on
+
+  puts "Do you want to play again? (yes/no)"
+  want_to_play = gets.chomp.downcase
+  if want_to_play == 'yes' || want_to_play == 'y'
+    @game_still_on = true 
+    true
+  else
+    @game_still_on = false
+    false
+    break
+  end
+
+end while want_to_play
+
 puts
 puts "Thank you for playing!"
