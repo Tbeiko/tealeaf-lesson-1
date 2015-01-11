@@ -4,31 +4,29 @@
 # The first person to have three in a row, wins
 # There can be a tie 
 
-SPOTS = [" ", " ", " ",
-         " ", " ", " ",
-         " ", " ", " "]
+@spots = [" ", " ", " ",
+          " ", " ", " ",
+          " ", " ", " "]
+
 USER_MARK = "X"
 CPU_MARK  = "O"
 
-# For figuring out if two in a row. 
-WINNNG_LINES = [[SPOTS[0], SPOTS[1],SPOTS[2]], [SPOTS[3], SPOTS[4],SPOTS[5]], [SPOTS[6], SPOTS[7],SPOTS[8]],
-                [SPOTS[0], SPOTS[3],SPOTS[6]], [SPOTS[1], SPOTS[4],SPOTS[7]], [SPOTS[2], SPOTS[5],SPOTS[8]], 
-                [SPOTS[0], SPOTS[4],SPOTS[8]], [SPOTS[2], SPOTS[4],SPOTS[6]] ]
+WINNING_LINES = [[1,2,3],[4,5,6],[7,8,9],[1,4,7],[2,5,8],[3,6,9],[1,5,9],[3,5,7]]
 
 @game_still_on = true 
 
 def display_ttc_grid 
   empty_line      = "   |   |   "
   seperation_line = "---+---+---"
-  spot_line_one   = " #{SPOTS[0]} | #{SPOTS[1]} | #{SPOTS[2]} "
-  spot_line_two   = " #{SPOTS[3]} | #{SPOTS[4]} | #{SPOTS[5]} "
-  spot_line_three = " #{SPOTS[6]} | #{SPOTS[7]} | #{SPOTS[8]} "
+  spot_line_one   = " #{@spots[0]} | #{@spots[1]} | #{@spots[2]} "
+  spot_line_two   = " #{@spots[3]} | #{@spots[4]} | #{@spots[5]} "
+  spot_line_three = " #{@spots[6]} | #{@spots[7]} | #{@spots[8]} "
   puts empty_line
   puts spot_line_one
   puts empty_line
   puts seperation_line
   puts empty_line
-  puts spot_line_two
+  puts spot_line_two   
   puts empty_line
   puts seperation_line
   puts empty_line
@@ -36,22 +34,14 @@ def display_ttc_grid
   puts empty_line
 end
 
-def assert_if_win(player_mark)
-  winning_combination =  ((SPOTS[0] == player_mark && SPOTS[1] == player_mark && SPOTS[2] == player_mark) ||
-                          (SPOTS[3] == player_mark && SPOTS[4] == player_mark && SPOTS[5] == player_mark) ||
-                          (SPOTS[6] == player_mark && SPOTS[7] == player_mark && SPOTS[8] == player_mark) ||
-                          (SPOTS[0] == player_mark && SPOTS[3] == player_mark && SPOTS[6] == player_mark) ||
-                          (SPOTS[1] == player_mark && SPOTS[4] == player_mark && SPOTS[7] == player_mark) ||
-                          (SPOTS[2] == player_mark && SPOTS[5] == player_mark && SPOTS[8] == player_mark) ||
-                          (SPOTS[0] == player_mark && SPOTS[4] == player_mark && SPOTS[8] == player_mark) ||
-                          (SPOTS[2] == player_mark && SPOTS[4] == player_mark && SPOTS[6] == player_mark))
-  if    winning_combination && (player_mark == USER_MARK)
+def assert_if_win(lines, spots)
+  if lines.find {|l| l.all? {|k| spots[k-1] == USER_MARK}}
     puts
     puts "TIC TAC TOE"
     puts
-    puts "Congragulation you won!"
+    puts "Congragulations you won!"
     @game_still_on = false
-  elsif winning_combination && (player_mark == CPU_MARK)
+  elsif lines.find {|l| l.all? {|k| spots[k-1] == CPU_MARK}}
     puts
     puts "TIC TAC TOE"
     puts
@@ -61,7 +51,7 @@ def assert_if_win(player_mark)
 end
 
 def assert_if_tie
-  if     SPOTS.include?(" ")
+  if     @spots.include?(" ")
     # Still empty spaces, the game continues
   elsif @game_still_on
     @game_still_on = false
@@ -71,15 +61,54 @@ def assert_if_tie
   end
 end
 
-# Working on this method more in try_two.rb 
-# def assert_two_in_a_row(arr, player_mark)
-#   if arr.each.count(player_mark) == 2
-#     puts "We're onto something!"
-#     # arr.select{|k,v| v == ' '}.keys.first
-#   else
-#     false
-#   end
-# end
+def two_in_a_row(hsh, player_mark)
+  if hsh.values.count(player_mark) == 2
+    hsh.select{|k,v| v == " "}.keys.first
+  else
+    false
+  end
+end
+
+def computer_moves(line, squares)
+    puts
+    puts "The computer is strategizing ..."
+    puts
+    sleep 0.5
+
+    defend_this_square = nil 
+    attacked = false 
+    needs_to_play = true
+
+    # Attack
+    WINNING_LINES.each do |l| 
+      defend_this_square = two_in_a_row({l[0] => squares[l[0]-1], l[1] => squares[l[1]-1], l[2] => squares[l[2]-1]}, CPU_MARK)
+      if defend_this_square
+        squares[defend_this_square-1] = CPU_MARK
+        attacked = true 
+        needs_to_play = false
+        break
+      end
+    end
+
+    # Defend 
+    if attacked == false
+      WINNING_LINES.each do |l|
+        defend_this_square = two_in_a_row({l[0] => squares[l[0]-1], l[1] => squares[l[1]-1], l[2] => squares[l[2]-1]}, USER_MARK)
+        if defend_this_square
+          squares[defend_this_square-1] = CPU_MARK
+          needs_to_play = false
+          break
+        end
+      end
+    end
+
+    unless defend_this_square
+      begin
+        cpu_pick = rand(9)
+      end while @spots[cpu_pick] != " "
+      @spots[cpu_pick]    = CPU_MARK
+    end
+end
 
 puts 
 puts "Welcome to TicTacToe!"
@@ -91,27 +120,19 @@ begin
   puts "Please select where to place your 'X'. (1-9, 1-3 is the first row, 4-6 the second and 7-9 the third.)"
 
   user_pick = gets.chomp.to_i
-  if SPOTS[user_pick-1] != " "
+  if @spots[user_pick-1] != " "
     begin
       puts "That spot is already taken! Please choose another one."
       user_pick = gets.chomp.to_i
-    end while SPOTS[user_pick-1] != " "
+    end while @spots[user_pick-1] != " "
   end
-  SPOTS[user_pick-1] = USER_MARK
-  assert_if_win(USER_MARK)
+  @spots[user_pick-1] = USER_MARK
+  assert_if_win(WINNING_LINES, @spots)
   assert_if_tie
 
   if @game_still_on
-    puts
-    puts "The computer is strategizing ..."
-    puts
-    # sleep 1.5
-
-    begin
-      cpu_pick = rand(9)
-    end while SPOTS[cpu_pick] != " "
-    SPOTS[cpu_pick]    = CPU_MARK
-    assert_if_win(CPU_MARK)
+    computer_moves(WINNING_LINES, @spots)
+    assert_if_win(WINNING_LINES, @spots)
     assert_if_tie
   end 
 end while @game_still_on
